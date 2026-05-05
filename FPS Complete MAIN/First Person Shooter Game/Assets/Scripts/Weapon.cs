@@ -8,6 +8,9 @@ public class Weapon : MonoBehaviour
     [SerializeField] ParticleSystem muzzleFlash;
     private CinemachineImpulseSource impulseSource;
 
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip shootSound;
+
     int currentAmmo;
     public int CurrentAmmo => currentAmmo;
     public bool HasAmmo => currentAmmo > 0;
@@ -25,6 +28,12 @@ public class Weapon : MonoBehaviour
 
         currentAmmo--;
         muzzleFlash.Play();
+
+        if (audioSource != null && shootSound != null)
+        {
+            audioSource.PlayOneShot(shootSound);
+        }
+
         impulseSource.GenerateImpulse();
         Debug.Log(impulseSource);
 

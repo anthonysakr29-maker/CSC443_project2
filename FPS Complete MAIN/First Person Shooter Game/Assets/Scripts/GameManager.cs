@@ -42,4 +42,13 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.SetInt("FinalScore", score);
         PlayerPrefs.SetInt("FinalMoney", money);
     }
+
+    public bool SpendMoney(int amount)
+    {
+        if (money < amount) return false;
+
+        money -= amount;
+        UpdateUI();
+        return true;
+    }
 }

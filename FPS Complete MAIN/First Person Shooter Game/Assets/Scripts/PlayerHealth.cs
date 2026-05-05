@@ -85,6 +85,13 @@ public class PlayerHealth : MonoBehaviour
     {
         isDead = true;
 
+        EnemySpawner spawner = FindAnyObjectByType<EnemySpawner>();
+
+        if (spawner != null)
+        {
+            PlayerPrefs.SetInt("FinalWave", spawner.GetCurrentWave());
+        }
+
         if (GameManager.Instance != null)
         {
             GameManager.Instance.SaveFinalStats();

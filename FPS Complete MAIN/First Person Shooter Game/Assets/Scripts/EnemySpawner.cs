@@ -33,6 +33,8 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] private TextMeshProUGUI waveText;
     [SerializeField] private TextMeshProUGUI enemiesLeftText;
 
+    [SerializeField] private ShopManager shopManager;
+
     private ObjectPool<EnemyHealth>[] pools;
     private Dictionary<EnemyHealth, ObjectPool<EnemyHealth>> activeEnemyPools = new Dictionary<EnemyHealth, ObjectPool<EnemyHealth>>();
 
@@ -40,6 +42,8 @@ public class EnemySpawner : MonoBehaviour
     private int enemiesToSpawn;
     private int enemiesAlive;
     private bool waveActive;
+
+    private bool waitingForShop;
 
     private void Start()
     {
@@ -88,7 +92,17 @@ public class EnemySpawner : MonoBehaviour
             waveActive = false;
             UpdateUI();
 
-            yield return new WaitForSeconds(timeBetweenWaves);
+            waitingForShop = true;
+
+            if (shopManager != null)
+            {
+                shopManager.OpenShop();
+            }
+
+            while (waitingForShop)
+            {
+                yield return null;
+            }
         }
     }
 
@@ -165,5 +179,15 @@ public class EnemySpawner : MonoBehaviour
 
         if (enemiesLeftText != null)
             enemiesLeftText.text = waveActive ? "Enemies: " + enemiesAlive : "Next wave soon...";
+    }
+
+    public void ContinueToNextWave()
+    {
+        waitingForShop = false;
+    }
+
+    public int GetCurrentWave()
+    {
+        return currentWave;
     }
 }

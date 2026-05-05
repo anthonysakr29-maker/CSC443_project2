@@ -1,5 +1,4 @@
 using UnityEngine;
-using StarterAssets;
 
 public class Turret : MonoBehaviour
 {
@@ -16,37 +15,71 @@ public class Turret : MonoBehaviour
     [SerializeField] private float fireRate = 2f;
     [SerializeField] private int damage = 1;
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip fireSound;
+
     [Header("Pool")]
     [SerializeField] private int poolSize = 10;
 
     private ObjectPool<Projectile> projectilePool;
-    private Transform player;
     private float nextFireTime;
 
     private void Start()
     {
-        player = FindAnyObjectByType<FirstPersonController>().transform;
         projectilePool = new ObjectPool<Projectile>(projectilePrefab, transform, poolSize);
     }
 
     private void Update()
     {
-        if (player == null) return;
+        EnemyHealth target = FindClosestEnemy();
 
-        float distanceToPlayer = Vector3.Distance(transform.position, player.position);
-        if (distanceToPlayer > detectionRange) return;
+        if (target == null) return;
 
-        TrackPlayer();
+        TrackTarget(target.transform);
 
         if (Time.time >= nextFireTime)
+        {
             Fire();
+        }
     }
 
-    private void TrackPlayer()
+    private EnemyHealth FindClosestEnemy()
     {
-        Vector3 direction = (player.position - head.position).normalized;
+        EnemyHealth[] enemies = FindObjectsByType<EnemyHealth>(FindObjectsSortMode.None);
+
+        EnemyHealth closestEnemy = null;
+        float closestDistance = detectionRange;
+
+        foreach (EnemyHealth enemy in enemies)
+        {
+            if (!enemy.gameObject.activeInHierarchy) continue;
+
+            float distance = Vector3.Distance(transform.position, enemy.transform.position);
+
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                closestEnemy = enemy;
+            }
+        }
+
+        return closestEnemy;
+    }
+
+    private void TrackTarget(Transform target)
+    {
+        Vector3 direction = (target.position - head.position).normalized;
+
+        if (direction == Vector3.zero) return;
+
         Quaternion targetRotation = Quaternion.LookRotation(direction);
-        head.rotation = Quaternion.Slerp(head.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+
+        head.rotation = Quaternion.Slerp(
+            head.rotation,
+            targetRotation,
+            rotationSpeed * Time.deltaTime
+        );
     }
 
     private void Fire()
@@ -55,6 +88,11 @@ public class Turret : MonoBehaviour
 
         Projectile projectile = projectilePool.Get(firePoint.position, firePoint.rotation);
         projectile.Fire(damage, ReturnProjectile);
+
+        if (audioSource != null && fireSound != null)
+        {
+            audioSource.PlayOneShot(fireSound);
+        }
     }
 
     private void ReturnProjectile(Projectile projectile)
@@ -64,7 +102,17 @@ public class Turret : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
-        Gizmos.color = Color.red;
+        Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(transform.position, detectionRange);
+    }
+
+    public void UpgradeFireRate(float amount)
+    {
+        fireRate += amount;
+    }
+
+    public void UpgradeDamage(int amount)
+    {
+        damage += amount;
     }
 }
