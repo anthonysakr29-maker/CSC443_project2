@@ -16,6 +16,7 @@ public class EnemyHealth : MonoBehaviour, IPoolable
 
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip hitSound;
+    [SerializeField] private AudioClip deathSound;
 
     [SerializeField] private GameObject deathEffectPrefab;
 
@@ -74,6 +75,11 @@ public class EnemyHealth : MonoBehaviour, IPoolable
         if (deathEffectPrefab != null)
         {
             Instantiate(deathEffectPrefab, transform.position, Quaternion.identity);
+        }
+
+        if (audioSource != null && deathSound != null)
+        {
+            audioSource.PlayOneShot(deathSound);
         }
 
         OnDied?.Invoke(this);
