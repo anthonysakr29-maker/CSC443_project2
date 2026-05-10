@@ -15,6 +15,10 @@ public class ShopManager : MonoBehaviour
     [SerializeField] private int fireRateUpgradeCost = 300;
     [SerializeField] private int damageUpgradeCost = 300;
 
+    [Header("Consumables")]
+    [SerializeField] private int fullHealCost = 250;
+    [SerializeField] private int ammoRefillCost = 200;
+
     private bool fireRateUpgraded;
     private bool damageUpgraded;
 
@@ -33,16 +37,18 @@ public class ShopManager : MonoBehaviour
 
     public void OpenShop()
     {
+        CursorLock.CanLockCursor = false;
+
         shopPanel.SetActive(true);
         Time.timeScale = 0f;
 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
-        SetMessage("Shop opened");
-
         if (playerInput != null)
             playerInput.enabled = false;
+
+        SetMessage("Shop opened");
     }
 
     public void BuyTurret()
@@ -72,15 +78,17 @@ public class ShopManager : MonoBehaviour
         shopPanel.SetActive(false);
         Time.timeScale = 1f;
 
+        CursorLock.CanLockCursor = true;
+
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        if (playerInput != null)
+            playerInput.enabled = true;
 
         EnemySpawner spawner = FindAnyObjectByType<EnemySpawner>();
         if (spawner != null)
             spawner.ContinueToNextWave();
-
-        if (playerInput != null)
-            playerInput.enabled = true;
     }
 
     private void SetMessage(string message)
@@ -141,5 +149,51 @@ public class ShopManager : MonoBehaviour
 
         damageUpgraded = true;
         SetMessage("Damage upgraded");
+    }
+
+    public void BuyFullHeal()
+    {
+        PlayerHealth playerHealth = FindAnyObjectByType<PlayerHealth>();
+
+        if (playerHealth == null)
+        {
+            SetMessage("Player health not found");
+            return;
+        }
+
+        if (playerHealth.IsFullHealth())
+        {
+            SetMessage("Health already full");
+            return;
+        }
+
+        if (!GameManager.Instance.SpendMoney(fullHealCost))
+        {
+            SetMessage("Not enough money");
+            return;
+        }
+
+        playerHealth.Heal(999);
+        SetMessage("Health restored");
+    }
+
+    public void BuyAmmoRefill()
+    {
+        WeaponSwitcher switcher = FindAnyObjectByType<WeaponSwitcher>();
+
+        if (switcher == null || !switcher.HasUnlockedWeapons())
+        {
+            SetMessage("No weapons unlocked");
+            return;
+        }
+
+        if (!GameManager.Instance.SpendMoney(ammoRefillCost))
+        {
+            SetMessage("Not enough money");
+            return;
+        }
+
+        switcher.RefillAllUnlockedWeapons();
+        SetMessage("Ammo refilled");
     }
 }

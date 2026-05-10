@@ -15,8 +15,8 @@ TagManager:
   - Robot
   - Ground
   - Weapon
-  - 
-  - 
+  - Walkable
+  - NotWalkable
   - 
   - 
   - 

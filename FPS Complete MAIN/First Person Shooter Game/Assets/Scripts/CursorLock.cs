@@ -1,22 +1,27 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class CursorLock : MonoBehaviour
 {
-    void Start()
+    public static bool CanLockCursor = true;
+
+    private void Start()
     {
-        LockCursor();
+        if (CanLockCursor)
+            LockCursor();
     }
 
-    void Update()
+    private void Update()
     {
-        // If user clicks, re-lock cursor
-        if (Input.GetMouseButtonDown(0))
+        if (!CanLockCursor) return;
+
+        if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
         {
             LockCursor();
         }
     }
 
-    void LockCursor()
+    private void LockCursor()
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;

@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class WeaponPickup : Pickup
 {
-    [SerializeField] WeaponData weaponData;
+    [SerializeField] private WeaponData weaponData;
 
     protected override bool OnPickedUp(Collider player)
     {
@@ -11,17 +11,15 @@ public class WeaponPickup : Pickup
 
         Weapon[] weapons = player.GetComponentsInChildren<Weapon>(true);
 
-        foreach (Weapon weapon in weapons) {
-            if (weapon.Data == weaponData) {
-
-                //Unlock weapon
+        foreach (Weapon weapon in weapons)
+        {
+            if (weapon.Data == weaponData)
+            {
                 switcher.UnlockWeapon(weapon);
                 return true;
-            
             }
         }
+
         return false;
-
     }
-
 }

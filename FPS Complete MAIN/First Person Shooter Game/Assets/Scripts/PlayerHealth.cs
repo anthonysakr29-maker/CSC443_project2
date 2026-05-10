@@ -63,6 +63,11 @@ public class PlayerHealth : MonoBehaviour
         UpdateUI();
     }
 
+    public bool IsFullHealth()
+    {
+        return currentHealth >= maxHealth;
+    }
+
     private void UpdateUI()
     {
         if (healthSlider != null)
