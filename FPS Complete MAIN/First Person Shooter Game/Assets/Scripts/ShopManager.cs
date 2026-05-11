@@ -1,12 +1,22 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class ShopManager : MonoBehaviour
 {
     [Header("Shop UI")]
     [SerializeField] private GameObject shopPanel;
     [SerializeField] private TextMeshProUGUI messageText;
+
+    [SerializeField] private Button buyTurretButton;
+    [SerializeField] private TextMeshProUGUI buyTurretButtonText;
+
+    [SerializeField] private Button fireRateButton;
+    [SerializeField] private TextMeshProUGUI fireRateButtonText;
+
+    [SerializeField] private Button damageButton;
+    [SerializeField] private TextMeshProUGUI damageButtonText;
 
     [Header("Turret Purchase")]
     [SerializeField] private GameObject turretToActivate;
@@ -48,6 +58,8 @@ public class ShopManager : MonoBehaviour
         if (playerInput != null)
             playerInput.enabled = false;
 
+        UpdateShopButtons();
+
         SetMessage("Shop opened");
     }
 
@@ -70,6 +82,7 @@ public class ShopManager : MonoBehaviour
         turretToActivate.SetActive(true);
         turretBought = true;
 
+        UpdateShopButtons();
         SetMessage("Turret activated");
     }
 
@@ -121,6 +134,7 @@ public class ShopManager : MonoBehaviour
         turret.UpgradeFireRate(1f);
 
         fireRateUpgraded = true;
+        UpdateShopButtons();
         SetMessage("Fire rate upgraded");
     }
 
@@ -148,6 +162,7 @@ public class ShopManager : MonoBehaviour
         turret.UpgradeDamage(1);
 
         damageUpgraded = true;
+        UpdateShopButtons();
         SetMessage("Damage upgraded");
     }
 
@@ -195,5 +210,26 @@ public class ShopManager : MonoBehaviour
 
         switcher.RefillAllUnlockedWeapons();
         SetMessage("Ammo refilled");
+    }
+
+    private void UpdateShopButtons()
+    {
+        if (buyTurretButton != null)
+            buyTurretButton.interactable = !turretBought;
+
+        if (buyTurretButtonText != null)
+            buyTurretButtonText.text = turretBought ? "Turret Purchased" : "Buy Turret - $" + turretCost;
+
+        if (fireRateButton != null)
+            fireRateButton.interactable = turretBought && !fireRateUpgraded;
+
+        if (fireRateButtonText != null)
+            fireRateButtonText.text = fireRateUpgraded ? "Fire Rate Maxed" : "Upgrade Fire Rate - $" + fireRateUpgradeCost;
+
+        if (damageButton != null)
+            damageButton.interactable = turretBought && !damageUpgraded;
+
+        if (damageButtonText != null)
+            damageButtonText.text = damageUpgraded ? "Damage Maxed" : "Upgrade Damage - $" + damageUpgradeCost;
     }
 }

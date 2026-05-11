@@ -1308,7 +1308,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameOverMenu
   finalScoreText: {fileID: 243980586}
   finalMoneyText: {fileID: 406434403}
-  waveText: {fileID: 0}
+  waveText: {fileID: 653553656}
 --- !u!4 &1647261425
 Transform:
   m_ObjectHideFlags: 0

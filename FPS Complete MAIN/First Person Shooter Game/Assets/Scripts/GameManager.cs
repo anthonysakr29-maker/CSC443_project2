@@ -41,6 +41,7 @@ public class GameManager : MonoBehaviour
     {
         PlayerPrefs.SetInt("FinalScore", score);
         PlayerPrefs.SetInt("FinalMoney", money);
+        PlayerPrefs.Save();
     }
 
     public bool SpendMoney(int amount)
